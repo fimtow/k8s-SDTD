@@ -1,0 +1,1 @@
+export BUCKET=stdt-kops-storage-25454
