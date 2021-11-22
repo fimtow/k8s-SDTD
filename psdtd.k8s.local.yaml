@@ -1,0 +1,104 @@
+apiVersion: kops.k8s.io/v1alpha2
+kind: Cluster
+metadata:
+  name: psdtd.k8s.local
+spec:
+  api:
+    loadBalancer:
+      type: Public
+  authorization:
+    rbac: {}
+  channel: stable
+  cloudConfig:
+    gceServiceAccount: default
+  cloudProvider: gce
+  configBase: gs://xxxxxxxxxxx/psdtd.k8s.local
+  etcdClusters:
+  - cpuRequest: 200m
+    etcdMembers:
+    - instanceGroup: master-us-central1-a
+      name: a
+    memoryRequest: 100Mi
+    name: main
+  - cpuRequest: 100m
+    etcdMembers:
+    - instanceGroup: master-us-central1-a
+      name: a
+    memoryRequest: 100Mi
+    name: events
+  iam:
+    allowContainerRegistry: true
+    legacy: false
+  kubelet:
+    anonymousAuth: false
+  kubernetesApiAccess:
+  - 0.0.0.0/0
+  - ::/0
+  kubernetesVersion: 1.22.2
+  masterPublicName: api.psdtd.k8s.local
+  networking:
+    kubenet: {}
+  nonMasqueradeCIDR: 100.64.0.0/10
+  project: projet-sdtd-5
+  sshAccess:
+  - 0.0.0.0/0
+  - ::/0
+  subnets:
+  - name: us-central1
+    region: us-central1
+    type: Public
+  topology:
+    dns:
+      type: Public
+    masters: public
+    nodes: public
+
+---
+
+apiVersion: kops.k8s.io/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: psdtd.k8s.local
+  name: master-us-central1-a
+spec:
+  image: ubuntu-os-cloud/ubuntu-2004-focal-v20210927
+  instanceMetadata:
+    httpPutResponseHopLimit: 3
+    httpTokens: required
+  machineType: n1-standard-1
+  maxSize: 1
+  minSize: 1
+  nodeLabels:
+    cloud.google.com/metadata-proxy-ready: "true"
+    kops.k8s.io/instancegroup: master-us-central1-a
+  role: Master
+  subnets:
+  - us-central1
+  zones:
+  - us-central1-a
+
+---
+
+apiVersion: kops.k8s.io/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: psdtd.k8s.local
+  name: nodes-us-central1-a
+spec:
+  image: ubuntu-os-cloud/ubuntu-2004-focal-v20210927
+  instanceMetadata:
+    httpPutResponseHopLimit: 1
+    httpTokens: required
+  machineType: n1-standard-2
+  maxSize: 2
+  minSize: 2
+  nodeLabels:
+    cloud.google.com/metadata-proxy-ready: "true"
+    kops.k8s.io/instancegroup: nodes-us-central1-a
+  role: Node
+  subnets:
+  - us-central1
+  zones:
+  - us-central1-a
