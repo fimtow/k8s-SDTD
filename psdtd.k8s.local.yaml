@@ -12,7 +12,7 @@ spec:
   cloudConfig:
     gceServiceAccount: default
   cloudProvider: gce
-  configBase: gs://stdt-kops-storage-24091/psdtd.k8s.local
+  configBase: gs://xxxxxxxxxxx/psdtd.k8s.local
   etcdClusters:
     - etcdMembers:
       - instanceGroup: master-europe-west1-b
@@ -43,7 +43,7 @@ spec:
   networking:
     kubenet: {}
   nonMasqueradeCIDR: 100.64.0.0/10
-  project: projet-sdtd-5
+  project: yyyyyyyyyyy
   sshAccess:
   - 0.0.0.0/0
   - ::/0
