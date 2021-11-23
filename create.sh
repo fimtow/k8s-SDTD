@@ -20,4 +20,4 @@ do
     CLUSTER_IP=$(kubectl get services my-service | awk 'FNR == 2 {print $4}')
     sleep 5
 done
-echo The cluster is ready, you can reach it at ${CLUSTER_IP}d
+echo The cluster is ready, you can reach it at ${CLUSTER_IP}

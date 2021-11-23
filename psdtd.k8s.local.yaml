@@ -12,20 +12,24 @@ spec:
   cloudConfig:
     gceServiceAccount: default
   cloudProvider: gce
-  configBase: gs://xxxxxxxxxxx/psdtd.k8s.local
+  configBase: gs://stdt-kops-storage-24091/psdtd.k8s.local
   etcdClusters:
-  - cpuRequest: 200m
-    etcdMembers:
-    - instanceGroup: master-us-central1-a
-      name: a
-    memoryRequest: 100Mi
-    name: main
-  - cpuRequest: 100m
-    etcdMembers:
-    - instanceGroup: master-us-central1-a
-      name: a
-    memoryRequest: 100Mi
-    name: events
+    - etcdMembers:
+      - instanceGroup: master-europe-west1-b
+        name: b
+      - instanceGroup: master-europe-west1-c
+        name: c
+      - instanceGroup: master-europe-west1-d
+        name: d
+      name: main
+    - etcdMembers:
+      - instanceGroup: master-europe-west1-b
+        name: b
+      - instanceGroup: master-europe-west1-c
+        name: c
+      - instanceGroup: master-europe-west1-d
+        name: d
+      name: events
   iam:
     allowContainerRegistry: true
     legacy: false
@@ -39,28 +43,26 @@ spec:
   networking:
     kubenet: {}
   nonMasqueradeCIDR: 100.64.0.0/10
-  project: yyyyyyyyyyy
+  project: projet-sdtd-5
   sshAccess:
   - 0.0.0.0/0
   - ::/0
   subnets:
-  - name: us-central1
-    region: us-central1
+  - name: europe-west1
+    region: europe-west1
     type: Public
   topology:
     dns:
       type: Public
     masters: public
     nodes: public
-
 ---
-
 apiVersion: kops.k8s.io/v1alpha2
 kind: InstanceGroup
 metadata:
   labels:
     kops.k8s.io/cluster: psdtd.k8s.local
-  name: master-us-central1-a
+  name: master-europe-west1-b
 spec:
   image: ubuntu-os-cloud/ubuntu-2004-focal-v20210927
   instanceMetadata:
@@ -71,21 +73,65 @@ spec:
   minSize: 1
   nodeLabels:
     cloud.google.com/metadata-proxy-ready: "true"
-    kops.k8s.io/instancegroup: master-us-central1-a
+    kops.k8s.io/instancegroup: master-europe-west1-b
   role: Master
   subnets:
-  - us-central1
+  - europe-west1
   zones:
-  - us-central1-a
-
+  - europe-west1-b
 ---
-
 apiVersion: kops.k8s.io/v1alpha2
 kind: InstanceGroup
 metadata:
   labels:
     kops.k8s.io/cluster: psdtd.k8s.local
-  name: nodes-us-central1-a
+  name: master-europe-west1-c
+spec:
+  image: ubuntu-os-cloud/ubuntu-2004-focal-v20210927
+  instanceMetadata:
+    httpPutResponseHopLimit: 3
+    httpTokens: required
+  machineType: n1-standard-1
+  maxSize: 1
+  minSize: 1
+  nodeLabels:
+    cloud.google.com/metadata-proxy-ready: "true"
+    kops.k8s.io/instancegroup: master-europe-west1-c
+  role: Master
+  subnets:
+  - europe-west1
+  zones:
+  - europe-west1-c
+---
+apiVersion: kops.k8s.io/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: psdtd.k8s.local
+  name: master-europe-west1-d
+spec:
+  image: ubuntu-os-cloud/ubuntu-2004-focal-v20210927
+  instanceMetadata:
+    httpPutResponseHopLimit: 3
+    httpTokens: required
+  machineType: n1-standard-1
+  maxSize: 1
+  minSize: 1
+  nodeLabels:
+    cloud.google.com/metadata-proxy-ready: "true"
+    kops.k8s.io/instancegroup: master-europe-west1-d
+  role: Master
+  subnets:
+  - europe-west1
+  zones:
+  - europe-west1-d
+---
+apiVersion: kops.k8s.io/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: psdtd.k8s.local
+  name: nodes-europe-west1-b
 spec:
   image: ubuntu-os-cloud/ubuntu-2004-focal-v20210927
   instanceMetadata:
@@ -96,9 +142,32 @@ spec:
   minSize: 2
   nodeLabels:
     cloud.google.com/metadata-proxy-ready: "true"
-    kops.k8s.io/instancegroup: nodes-us-central1-a
+    kops.k8s.io/instancegroup: nodes-europe-west1-b
   role: Node
   subnets:
-  - us-central1
+  - europe-west1
   zones:
-  - us-central1-a
+  - europe-west1-b
+---
+apiVersion: kops.k8s.io/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: psdtd.k8s.local
+  name: nodes-europe-west1-c
+spec:
+  image: ubuntu-os-cloud/ubuntu-2004-focal-v20210927
+  instanceMetadata:
+    httpPutResponseHopLimit: 1
+    httpTokens: required
+  machineType: n1-standard-2
+  maxSize: 2
+  minSize: 2
+  nodeLabels:
+    cloud.google.com/metadata-proxy-ready: "true"
+    kops.k8s.io/instancegroup: nodes-europe-west1-c
+  role: Node
+  subnets:
+  - europe-west1
+  zones:
+  - europe-west1-c
