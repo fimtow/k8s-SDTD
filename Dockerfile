@@ -25,7 +25,7 @@ RUN export DISPLAY=:0
 
 COPY *.sh *.yaml /
 COPY deployement /deployement
-CMD . /script.sh
+CMD ["/bin/bash", "./script.sh"]
 #CMD echo "$(<kubectl.sha256) kubectl" | sha256sum --check \ 
 #    gcloud init \
 #    gcloud auth application-default login
