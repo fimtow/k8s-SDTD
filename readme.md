@@ -1,10 +1,20 @@
 # User guide
-* You need to have kubectl, kops and gsutils installed and configured (linked to your account with all the permissions)
-* To create the cluster use the following command (dont forget the space, it's important)
+All necessary installations are managed by the Dockerfile provided. Launching the container only requires building the image and running it.  
+Inside the project folder, issue the following commands:
+* Build command :
 ```bash
-. create.sh
+docker build -t IMAGE_TAG .
 ```
-* To delete the cluser use the following command (no space needed)
+* Run command :
 ```bash
-./delete.sh
+docker run -it IMAGE_TAG /bin/bash
+```
+Once the container is run, it launches `script.sh` that sets your google account credentials, gives it necessary permissions and creates the cluster.
+
+* To delete the cluster use the following command :
+```bash
+. delete.sh
+```
+```diff
+-To run scripts, make sure to leave a space between '.' and the name of the file.
 ```
