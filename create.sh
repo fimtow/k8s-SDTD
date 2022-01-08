@@ -13,11 +13,11 @@ kops update cluster ${CLUSTER_NAME} --yes
 kops export kubeconfig --admin
 kops validate cluster --wait 10m
 kubectl apply -f deployement
-CLUSTER_IP=$(kubectl get services my-service | awk 'FNR == 2 {print $4}')
-CLUSTER_IP="<pending>"
-while [ "${CLUSTER_IP}" = "<pending>" ]
-do
-    CLUSTER_IP=$(kubectl get services my-service | awk 'FNR == 2 {print $4}')
-    sleep 5
-done
-echo The cluster is ready, you can reach it at ${CLUSTER_IP}
+#CLUSTER_IP=$(kubectl get services my-service | awk 'FNR == 2 {print $4}')
+#CLUSTER_IP="<pending>"
+#while [ "${CLUSTER_IP}" = "<pending>" ]
+#do
+#    CLUSTER_IP=$(kubectl get services my-service | awk 'FNR == 2 {print $4}')
+#    sleep 5
+# done
+# echo The cluster is ready, you can reach it at ${CLUSTER_IP}
