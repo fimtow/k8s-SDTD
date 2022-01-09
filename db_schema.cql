@@ -72,3 +72,25 @@ CREATE TABLE cryptocurrency.biggest_losers_by_day (
 --     volume_30d text,
 --     volume_change_30d text,
 --     market_cap_change_30d text
+
+CREATE TABLE cryptocurrency.candles (
+  exchange text,
+  base text,
+  quote text,
+  datetime TIMESTAMP,
+  open double,
+  high double,
+  low double,
+  close double,
+  PRIMARY KEY ((exchange, base, quote), datetime)
+);
+
+CREATE TABLE cryptocurrency.candles_rsi (
+    exchange text,
+    base text,
+    quote text,
+    start_datetime TIMESTAMP,
+    end_datetime TIMESTAMP,
+    rsi double,
+    PRIMARY KEY ((exchange, base, quote), start_datetime, end_datetime)
+);
