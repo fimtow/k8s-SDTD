@@ -12,6 +12,20 @@ spec:
     app: cassandra
 ---
 apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: cassandra
+  name: cassandra-clip
+spec:
+  type: ClusterIP
+  ports:
+    - targetPort: 9042
+      port: 9042
+  selector:
+    app: cassandra
+---
+apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: cassandra-data-1
