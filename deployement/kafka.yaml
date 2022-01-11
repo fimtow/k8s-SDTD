@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: zookeeper
-          image: confluentinc/cp-zookeeper:6.1.1
+          image: confluentinc/cp-zookeeper:latest
           env:
             - name: ZOOKEEPER_CLIENT_PORT
               value: "2181"
@@ -61,7 +61,7 @@ spec:
     spec:
       containers:
         - name: broker
-          image: confluentinc/cp-kafka:6.1.1
+          image: confluentinc/cp-kafka:latest
           env:
             - name: KAFKA_BROKER_ID
               value: "1"
