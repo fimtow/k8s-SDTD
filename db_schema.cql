@@ -3,10 +3,9 @@ create keyspace cryptocurrency with replication = {'class' : 'SimpleStrategy', '
 CREATE TABLE cryptocurrency.coin_by_marketdominance (
     name text,
     datetime timestamp,
-    inserted_in_db timestamp,
     rank int,
     market_dominance double,
-    PRIMARY KEY ((name), datetime));
+    PRIMARY KEY ((rank), datetime));
 
 --INSERT INTO cryptocurrency.coin_by_marketdominance (name, datetime, inserted_in_db, rank, market_dominance) VALUES ('Bitcoin', 1641662870916, toTimestamp(now()), 1, 50.0);
 
