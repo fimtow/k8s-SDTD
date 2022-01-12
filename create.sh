@@ -7,6 +7,7 @@ export KOPS_STATE_STORE=gs://${BUCKET}/
 export PROJECT=$(gcloud config get-value project)
 gsutil mb gs://${BUCKET}/
 sed -i 's/xxxxxxxxxxx/'"${BUCKET}"'/' ${CLUSTER_NAME}.yaml
+sed -i 's/xxxxxxxxxxx/'"${BUCKET}"'/' export.sh
 sed -i 's/yyyyyyyyyyy/'"${PROJECT}"'/' ${CLUSTER_NAME}.yaml
 kops create -f ${CLUSTER_NAME}.yaml
 kops update cluster ${CLUSTER_NAME} --yes
@@ -14,6 +15,8 @@ kops export kubeconfig --admin
 kops validate cluster --wait 10m
 kubectl apply -f deployement/cassandra.yaml
 while [[ $(kubectl get pods cassandra-0 -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for cassandra" && sleep 1; done
+echo "cassandra pod created"
+sleep 1m
 kubectl cp db_schema.cql cassandra-0:/ 
 kubectl exec cassandra-0 -- cqlsh --file db_schema.cql
 kubectl apply -f deployement/spark.yaml

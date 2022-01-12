@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y\
     curl \
     ca-certificates \
     gnupg \
+    vim \
     firefox \
     apt-transport-https \
     net-tools
