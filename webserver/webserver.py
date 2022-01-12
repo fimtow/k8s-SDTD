@@ -38,12 +38,11 @@ def index():
 @app.route('/get_values')
 def get_values():
     lookback =  request.args.get('lookback', 10)
-
     session.set_keyspace('cryptocurrency')
     session.row_factory = dict_factory
     date_time = datetime.datetime.now() - datetime.timedelta(minutes=int(lookback))
-    date_str = date_time.strftime("%Y-%m-%d %H:%M:%S-0000")
-    rows = session.execute("SELECT name,market_dominance FROM coin_by_marketdominance where inserted_in_db >= '%s' ALLOW FILTERING;".format(date_str) % (date_time))
+    date_str = date_time.strftime("%Y-%m-%d %H:%M:%S+0000")
+    rows = session.execute("SELECT name,market_dominance FROM coin_by_marketdominance where rank in (1,2,3,4,5,6,7,8,9,10) limit 10 ;".format(date_str))
     return jsonify(results=rows.all())
 
 if __name__ == '__main__':
