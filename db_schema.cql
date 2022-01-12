@@ -93,3 +93,6 @@ CREATE TABLE cryptocurrency.candles_rsi (
     rsi double,
     PRIMARY KEY ((exchange, base, quote), start_datetime, end_datetime)
 );
+
+-- query to get latest crypto data by rank
+-- select * from cryptocurrency.coin_by_marketdominance where rank = 1 order by datetime desc limit 1;
