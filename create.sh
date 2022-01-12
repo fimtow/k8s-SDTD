@@ -21,12 +21,12 @@ kubectl cp db_schema.cql cassandra-0:/
 kubectl exec cassandra-0 -- cqlsh --file db_schema.cql
 kubectl apply -f deployement/spark.yaml
 kubectl apply -f deployement/kafka.yaml
-
-#CLUSTER_IP=$(kubectl get services my-service | awk 'FNR == 2 {print $4}')
-#CLUSTER_IP="<pending>"
-#while [ "${CLUSTER_IP}" = "<pending>" ]
-#do
-#    CLUSTER_IP=$(kubectl get services my-service | awk 'FNR == 2 {print $4}')
-#    sleep 5
-# done
-# echo The cluster is ready, you can reach it at ${CLUSTER_IP}
+kubectl apply -f deployement/visualisation.yaml
+CLUSTER_IP=$(kubectl get services visualisation | awk 'FNR == 2 {print $4}')
+CLUSTER_IP="<pending>"
+while [ "${CLUSTER_IP}" = "<pending>" ]
+do
+    CLUSTER_IP=$(kubectl get services visualisation | awk 'FNR == 2 {print $4}')
+    sleep 5
+ done
+echo The cluster is ready, you can reach it at ${CLUSTER_IP}
