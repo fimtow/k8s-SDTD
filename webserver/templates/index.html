@@ -15,6 +15,25 @@
             color: rgb(195, 0, 25);
         }
 
+        .tooltip {
+            background: #eee;
+            box-shadow: 0 0 5px #999999;
+            color: #333;
+            display: none;
+            font-size: 17px;
+            font-weight: bold;
+            /*left: 160px;*/
+            padding: 35px;
+            position: absolute;
+            text-align: center;
+            top: 80px;
+            width: 100px;
+            z-index: 10;
+            border-radius: 15px;
+            margin-left: -200px;
+            margin-top: 270px;
+        }
+
         img {
             margin: 5px 10px 3px 0px;
             float: left;
@@ -46,20 +65,6 @@
             color: #666666;
             font-size: 10px;
         }
-
-        .circular {
-            width: 300px;
-            height: 300px;
-            border-radius: 150px;
-            -webkit-border-radius: 150px;
-            -moz-border-radius: 150px;
-            /*background: url(http://link-to-your/image.jpg) no-repeat;*/
-        }
-
-        .circular img {
-            opacity: 0;
-            filter: alpha(opacity=0);
-        }
     </style>
 </head>
 
@@ -69,10 +74,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.9.3/lodash.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.js"></script>
+
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
     <div id="main">
-        <div id="container" style="position: relative; width: 800px; height: 480px; float: left; margin-right: 100px;">
-            <p style="margin-left: 40px; color: white;"><b>Last <span id="current_lookback"></span> Minutes</b></p>
-            <input type="range" id="lookback" value="10" style="margin-left: 20px;">
+        <div id="container"
+            style="position: relative; width: 1000px; height: 1000px; margin-right: auto;margin-left: auto;padding-left:300px">
+
+            <input type="range" id="lookback" value="10" style="margin-left: 250px;visibility:hidden">
+            <p style="margin-left: -120px; color: white;font-size: 3em;"><b>CoinCap API Visualisation : TOP 10 COINS</b>
+            </p>
         </div>
     </div>
     {# <div>
@@ -83,103 +95,101 @@
         </ul>
     </div>
     <script>
+        // set the dimensions and margins of the graph
+        var width = 700
+        height = 700
+        margin = 40
+
+        // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
+        var radius = Math.min(width, height) / 2 - margin
+
+        // append the svg object to the div called 'my_dataviz'
+        var svg = d3.select("#container")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g")
+            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
         (function () {
 
-            /*window.map = new Datamap({
-              scope: 'world',
-              element: document.getElementById('container'),
-              projection: 'mercator',
-              geographyConfig: {
-                borderWidth:0
-              },
-              fills: {
-                docker: 'white',
-                mesosphere: 'yellow',
-                coreoslinux: 'green',
-                tutum: 'beige',
-                quayio: 'yellowgreen',
-                kubernetesio: 'red',
-                microsoft: 'gray',
-                apple: 'lightyellow',
-                google: 'lightblue',
-              },
-              data: {
-                MYS: {fillKey: 'node' },
-                GBR: {fillKey: 'node' },
-                AMS: {fillKey: 'node' },
-                NLD: {fillKey: 'node' }    
-              }
-            });*/
 
-            var market_dom = {};
             (function poll() {
                 var lookback = document.getElementById("lookback").value;
-                document.getElementById("current_lookback").innerHTML = lookback;
                 setTimeout(function () {
                     $.ajax({
                         url: "get_values",
                         data: { 'lookback': lookback },
                         success: function (raw_data) {
-                            var data = [];
+                            let data = {};
                             var results = raw_data['results'];
 
                             for (var i = 0; i < results.length; i++) {
                                 var coin = results[i];
 
 
-                                var name = coin['name'];
-
-
-                                data.push({
-                                    name: coin['name'],
-                                    dominance: coin['market_dominance'],
-                                })
+                                data[coin['name']] = coin['market_dominance'];
                             };
-                            console.log(data.length);
-                            map.bubbles(data);
-                            /*for (var i = 0; i < results.length; i++) {
-                                var coin = results[i];
-                                var id = coin['id'];
-    
-                                if (id in market_dom)
-                                    continue;
-    
-                                market_dom[id] = true;
-                                var color = 'black'
-                                var title = coin['title'].toLowerCase();
-                                var location = coin['location']
-    
-                                if (!location) {
-                                    location = 'unknown'
-                                }
-    
-                                if (title.indexOf("docker") > -1) {
-                                    color = 'white'
-                                } else if (title.indexOf("mesosphere") > -1) {
-                                    color = 'yellow'
-                                } else if (title.indexOf("coreoslinux") > -1) {
-                                    color = 'green'
-                                } else if (title.indexOf("quayio") > -1) {
-                                    color = 'beige'
-                                } else if (title.indexOf("tutum") > -1) {
-                                    color = 'yellowgreen'
-                                } else if (title.indexOf("kubernetesio") > -1) {
-                                    color = 'red'
-                                } else if (title.indexOf("microsoft") > -1) {
-                                    color = 'gray'
-                                } else if (title.indexOf("google") > -1) {
-                                    color = 'lightyellow'
-                                } else if (title.indexOf("apple") > -1) {
-                                    color = 'lightblue'
-                                }
-    
-                                $('#ticker').prepend('<li style= "padding-bottom: 20px;"><img class="circular" style= "height:50px; width: 50px;" src="' + coin['profile_image_url'] + '"/> \
-                        <h2 style= "color:' + color + ';">' + coin['title'] + '</h2> \
-                        <p class="ago" style= "color: lightgray;"><b>' + location + '</b></p></li>')
-                                $("#ticker").each(function () {
-                                    $(this).html($(this).html().replace(/((http|https|ftp):\/\/[\w?=&.\/-;#~%-]+(?![\w\s?&.\/;#~%"=-]*>))/g, '<a href="$1">$1</a> '));
-                                });
-                            };*/
+
+
+                            console.log(data);
+                            //map.bubbles(data);
+
+                            var color = d3.scaleOrdinal()
+                                .domain(data)
+                                .range(d3.schemeSet2);
+
+                            // Compute the position of each group on the pie:
+                            var pie = d3.pie()
+                                .value(function (d) { return d.value; })
+                            var data_ready = pie(d3.entries(data))
+                            // Now I know that group A goes from 0 degrees to x degrees and so on.
+
+                            // shape helper to build arcs:
+                            var arcGenerator = d3.arc()
+                                .innerRadius(0)
+                                .outerRadius(radius)
+
+                            // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+                            var path = svg
+                                .selectAll('mySlices')
+                                .data(data_ready)
+                                .enter()
+                                .append('path')
+                                .attr('d', arcGenerator)
+                                .attr('fill', function (d) { return (color(d.data.key)) })
+                                .attr("stroke", "black")
+                                .style("stroke-width", "2px");
+
+                            //hover
+                            var tooltip = d3.select("#container").append("div").attr("class", "tooltip");
+                            tooltip.append("div").attr("class", "name");
+                            tooltip.append("div").attr("class", "percentage");
+
+                            path.attr("cursor", "pointer").on("mouseover", function (d) {
+                                var percent = d.data.value * 100;
+                                tooltip.select(".name").html(d.data.key);
+                                tooltip.select(".percentage").html(percent + '%');
+                                tooltip.style("display", "block");
+                                path.style("opacity", ".65");
+                            });
+                            path.on("mouseout", function (d) {
+                                tooltip.style("display", "none");
+                                path.style("opacity", "1");
+                            });
+
+                            // Now add the annotation. Use the centroid method to get the best coordinates
+                            svg
+                                .selectAll('mySlices')
+                                .data(data_ready)
+                                .enter()
+                                .append('text')
+                                .text(function (d) { return (d.data.key) })
+                                .attr("transform", function (d) { return "translate(" + arcGenerator.centroid(d) + ")"; })
+                                .style("text-anchor", "middle")
+                                .style("font-size", 17)
+                                .style("font-weight", "bold")
+
                         }, dataType: "json", complete: poll
                     });
                 }, 1000);
