@@ -23,7 +23,7 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.c
 
 RUN export DISPLAY=:0
 
-COPY *.sh *.yaml /
+COPY *.sh *.yaml *.cql /
 COPY deployement /deployement
 CMD ["/bin/bash", "./script.sh"]
 #CMD echo "$(<kubectl.sha256) kubectl" | sha256sum --check \ 

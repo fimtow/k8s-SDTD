@@ -12,7 +12,13 @@ kops create -f ${CLUSTER_NAME}.yaml
 kops update cluster ${CLUSTER_NAME} --yes
 kops export kubeconfig --admin
 kops validate cluster --wait 10m
-kubectl apply -f deployement
+kubectl apply -f deployement/cassandra.yaml
+while [[ $(kubectl get pods cassandra-0 -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for cassandra" && sleep 1; done
+kubectl cp db_schema.cql cassandra-0:/ 
+kubectl exec cassandra-0 -- cqlsh --file db_schema.cql
+kubectl apply -f deployement/spark.yaml
+kubectl apply -f deployement/kafka.yaml
+
 #CLUSTER_IP=$(kubectl get services my-service | awk 'FNR == 2 {print $4}')
 #CLUSTER_IP="<pending>"
 #while [ "${CLUSTER_IP}" = "<pending>" ]
