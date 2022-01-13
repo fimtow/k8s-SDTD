@@ -72,7 +72,7 @@ spec:
             - name: KAFKA_ADVERTISED_LISTENERS
               value: PLAINTEXT://broker-svc.kafka.svc.cluster.local:29092,PLAINTEXT_HOST://localhost:9092
             - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
-              value: "1"
+              value: "2"
             - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
               value: "1"
             - name: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
@@ -80,7 +80,7 @@ spec:
             - name: KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS
               value: "0"
             - name: KAFKA_NUM_PARTITIONS
-              value: "3"
+              value: "5"
             - name: KAFKA_JMX_PORT
               value: "9101"
             - name: KAFKA_JMX_HOSTNAME
@@ -138,7 +138,7 @@ spec:
             - name: KAFKA_ADVERTISED_LISTENERS
               value: PLAINTEXT://broker2-svc.kafka.svc.cluster.local:29093,PLAINTEXT_HOST://localhost:9093
             - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
-              value: "1"
+              value: "2"
             - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
               value: "1"
             - name: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
@@ -146,7 +146,7 @@ spec:
             - name: KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS
               value: "0"
             - name: KAFKA_NUM_PARTITIONS
-              value: "3"
+              value: "5"
             - name: KAFKA_JMX_PORT
               value: "9101"
             - name: KAFKA_JMX_HOSTNAME
@@ -211,5 +211,43 @@ spec:
   type: ClusterIP
   ports:
     - name: ingestion-api
+      protocol: TCP
+      port: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingestion-api2
+  namespace: kafka
+  labels:
+    component: ingestion-api2
+spec:
+  selector:
+    matchLabels:
+      component: ingestion-api2
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: ingestion-api2
+    spec:
+      containers:
+        - name: ingestion-api2
+          image: koukika/kafka-generator2:latest
+          ports:
+            - containerPort: 3000
+              name: api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingestion-api2-svc
+  namespace: kafka
+spec:
+  selector:
+    component: ingestion-api2
+  type: ClusterIP
+  ports:
+    - name: ingestion-api2
       protocol: TCP
       port: 3000
