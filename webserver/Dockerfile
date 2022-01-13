@@ -1,13 +1,13 @@
 FROM python:3.8
 
-# Install and configure python packages
-ADD requirements.txt /build/
-RUN pip install -r /build/requirements.txt
+WORKDIR /usr/src/app
+
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy files
-ADD ./webserver.py /
-ADD ./templates /templates
+COPY . .
 EXPOSE 5000
 
 # Start the process
-CMD ["python webserver.py"] 
+CMD [ "python", "./webserver.py" ]

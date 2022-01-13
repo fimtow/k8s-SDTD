@@ -5,8 +5,8 @@ CREATE TABLE cryptocurrency.coin_by_marketdominance (
     datetime timestamp,
     rank int,
     market_dominance double,
-    PRIMARY KEY ((rank), datetime));
-
+    PRIMARY KEY ((rank), datetime))
+WITH CLUSTERING ORDER BY (datetime DESC);
 --INSERT INTO cryptocurrency.coin_by_marketdominance (name, datetime, inserted_in_db, rank, market_dominance) VALUES ('Bitcoin', 1641662870916, toTimestamp(now()), 1, 50.0);
 
 --INSERT INTO NerdMovies JSON '{"movie": "Serenity", "director": "Joss Whedon", "year": 2005}';

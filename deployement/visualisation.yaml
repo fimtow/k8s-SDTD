@@ -18,6 +18,9 @@ spec:
           ports:
             - containerPort: 5000
               protocol: 
+          env:
+          - name: CASSANDRA_PORT_9042_TCP_ADDR
+            value: cassandra-clip
 ---
 apiVersion: v1
 kind: Service
