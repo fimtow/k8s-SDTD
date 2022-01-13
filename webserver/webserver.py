@@ -18,7 +18,7 @@ class UUIDEncoder(JSONEncoder):
     """ JSONEconder subclass used by the json render function.
     This is different from BaseJSONEoncoder since it also addresses
     encoding of UUID
-    """
+    """     
 
     def default(self, obj):
         if isinstance(obj, UUID):
@@ -41,12 +41,10 @@ def get_values():
     lookback =  request.args.get('lookback', 10)
     session.set_keyspace('cryptocurrency')
     session.row_factory = dict_factory
-    date_time = datetime.datetime.now() - datetime.timedelta(minutes=int(lookback))
-    date_str = date_time.strftime("%Y-%m-%d %H:%M:%S+0000")
-    maxi= session.execute("SELECT cast(max(datetime) as text) as max from coin_by_marketdominance;".format(date_str))
-    maxdate=pd.to_datetime(maxi.one().get('max'))
-    rows = session.execute("SELECT name,market_dominance FROM coin_by_marketdominance where rank in (1,2,3,4,5,6,7,8,9,10) and datetime='%s' limit 10 ;".format(date_str) % (maxdate))
-    return jsonify(results=rows.all())
+    resultat = []
+    for i in range(1,11):
+        resultat.append(session.execute("SELECT name,market_dominance from cryptocurrency.coin_by_marketdominance where rank = "+str(i)+" order by datetime desc limit 1;").one())
+    return jsonify(results=resultat)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

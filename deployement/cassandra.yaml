@@ -92,7 +92,7 @@ spec:
     spec:
       containers:
         - name: cassandra
-          image: cassandra:3
+          image: cassandra:4
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 7000
