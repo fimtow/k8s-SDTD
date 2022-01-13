@@ -1,17 +1,16 @@
 import datetime
-import pandas as pd
 import logging, sys
 from flask.json import JSONEncoder
 from flask import jsonify, request
 from uuid import UUID
-
+import os
 logging.basicConfig(stream=sys.stderr)
 
 from flask import Flask, render_template, Response
 from cassandra.cluster import Cluster
 from cassandra.query import dict_factory
 
-cluster = Cluster(['172.17.0.2'], port=9042)
+cluster = Cluster([os.environ.get('CASSANDRA_PORT_9042_TCP_ADDR')], port=9042)
 session = cluster.connect('cryptocurrency')
 
 class UUIDEncoder(JSONEncoder):
