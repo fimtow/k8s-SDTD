@@ -1,16 +1,17 @@
 import datetime
+import pandas as pd
 import logging, sys
 from flask.json import JSONEncoder
 from flask import jsonify, request
 from uuid import UUID
-import os
+
 logging.basicConfig(stream=sys.stderr)
 
 from flask import Flask, render_template, Response
 from cassandra.cluster import Cluster
 from cassandra.query import dict_factory
 
-cluster = Cluster([os.environ.get('CASSANDRA_PORT_9042_TCP_ADDR')], port=9042)
+cluster = Cluster(['172.17.0.2'], port=9042)
 session = cluster.connect('cryptocurrency')
 
 class UUIDEncoder(JSONEncoder):
@@ -42,7 +43,9 @@ def get_values():
     session.row_factory = dict_factory
     date_time = datetime.datetime.now() - datetime.timedelta(minutes=int(lookback))
     date_str = date_time.strftime("%Y-%m-%d %H:%M:%S+0000")
-    rows = session.execute("SELECT name,market_dominance FROM coin_by_marketdominance where rank in (1,2,3,4,5,6,7,8,9,10) limit 10 ;".format(date_str))
+    maxi= session.execute("SELECT cast(max(datetime) as text) as max from coin_by_marketdominance;".format(date_str))
+    maxdate=pd.to_datetime(maxi.one().get('max'))
+    rows = session.execute("SELECT name,market_dominance FROM coin_by_marketdominance where rank in (1,2,3,4,5,6,7,8,9,10) and datetime='%s' limit 10 ;".format(date_str) % (maxdate))
     return jsonify(results=rows.all())
 
 if __name__ == '__main__':
