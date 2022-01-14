@@ -119,7 +119,7 @@ spec:
   selector:
     matchLabels:
       component: spark-worker
-  replicas: 2
+  replicas: 3
   template:
     metadata:
       labels:
@@ -206,7 +206,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: spark-worker
-  minReplicas: 2
+  minReplicas: 3
   maxReplicas: 5
   metrics:
   - type: Resource
