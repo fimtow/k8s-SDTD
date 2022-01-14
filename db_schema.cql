@@ -84,13 +84,9 @@ CREATE TABLE cryptocurrency.candles (
 );
 
 CREATE TABLE cryptocurrency.candles_rsi (
-    exchange text,
-    base text,
-    quote text,
-    start_datetime TIMESTAMP,
-    end_datetime TIMESTAMP,
+    datetime timestamp,
     rsi double,
-    PRIMARY KEY ((exchange, base, quote), start_datetime, end_datetime)
+    PRIMARY KEY ((rsi), datetime)
 );
 
 -- query to get latest crypto data by rank
