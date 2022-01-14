@@ -86,7 +86,7 @@ CREATE TABLE cryptocurrency.candles (
 CREATE TABLE cryptocurrency.candles_rsi (
     datetime timestamp,
     rsi double,
-    PRIMARY KEY ((rsi), datetime)
+    PRIMARY KEY (datetime)
 );
 
 -- query to get latest crypto data by rank
