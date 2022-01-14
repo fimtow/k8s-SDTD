@@ -138,8 +138,8 @@ spec:
     httpPutResponseHopLimit: 1
     httpTokens: required
   machineType: n1-standard-2
-  maxSize: 3
-  minSize: 3
+  maxSize: 2
+  minSize: 2
   nodeLabels:
     cloud.google.com/metadata-proxy-ready: "true"
     kops.k8s.io/instancegroup: nodes-europe-west1-b
