@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: visualisation
+spec:
+  selector:
+    matchLabels:
+      app: visua
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: visua
+    spec:
+      containers:
+        - name: visualisation
+          image: fimtow/visua
+          ports:
+            - containerPort: 5000
+              protocol: 
+          env:
+          - name: CASSANDRA_PORT_9042_TCP_ADDR
+            value: cassandra-clip
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: visualisation
+spec:
+  selector:
+    app: visua
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: LoadBalancer
+status:
+  loadBalancer:
+    ingress:
+    - ip: 192.0.2.127

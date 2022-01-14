@@ -1,0 +1,5 @@
+requests
+flask
+cassandra-driver
+matplotlib
+pandas
