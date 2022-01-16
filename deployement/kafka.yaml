@@ -47,6 +47,88 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: zookeeper2
+  namespace: kafka
+spec:
+  selector:
+    matchLabels:
+      component: zookeeper2
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: zookeeper2
+    spec:
+      containers:
+        - name: zookeeper2
+          image: confluentinc/cp-zookeeper:latest
+          env:
+            - name: ZOOKEEPER_CLIENT_PORT
+              value: "2181"
+            - name: ZOOKEEPER_TICK_TIME
+              value: "2000"
+          ports:
+            - containerPort: 2181
+              name: zk
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper2-svc
+  namespace: kafka
+spec:
+  selector:
+    component: zookeeper2
+  type: ClusterIP
+  ports:
+    - name: zk
+      protocol: TCP
+      port: 2181
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zookeeper3
+  namespace: kafka
+spec:
+  selector:
+    matchLabels:
+      component: zookeeper3
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: zookeeper3
+    spec:
+      containers:
+        - name: zookeeper3
+          image: confluentinc/cp-zookeeper:latest
+          env:
+            - name: ZOOKEEPER_CLIENT_PORT
+              value: "2181"
+            - name: ZOOKEEPER_TICK_TIME
+              value: "2000"
+          ports:
+            - containerPort: 2181
+              name: zk
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper3-svc
+  namespace: kafka
+spec:
+  selector:
+    component: zookeeper3
+  type: ClusterIP
+  ports:
+    - name: zk
+      protocol: TCP
+      port: 2181
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: broker
   namespace: kafka
 spec:
@@ -66,7 +148,7 @@ spec:
             - name: KAFKA_BROKER_ID
               value: "1"
             - name: KAFKA_ZOOKEEPER_CONNECT
-              value: "zookeeper-svc.kafka.svc.cluster.local:2181"
+              value: "zookeeper-svc.kafka.svc.cluster.local:2181,zookeeper2-svc.kafka.svc.cluster.local:2181,zookeeper3-svc.kafka.svc.cluster.local:2181"
             - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
               value: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
             - name: KAFKA_ADVERTISED_LISTENERS
@@ -132,7 +214,7 @@ spec:
             - name: KAFKA_BROKER_ID
               value: "2"
             - name: KAFKA_ZOOKEEPER_CONNECT
-              value: "zookeeper-svc.kafka.svc.cluster.local:2181"
+              value: "zookeeper-svc.kafka.svc.cluster.local:2181,zookeeper2-svc.kafka.svc.cluster.local:2181,zookeeper3-svc.kafka.svc.cluster.local:2181"
             - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
               value: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
             - name: KAFKA_ADVERTISED_LISTENERS
@@ -175,6 +257,72 @@ spec:
     - name: broker2
       protocol: TCP
       port: 29093
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broker3
+  namespace: kafka
+spec:
+  selector:
+    matchLabels:
+      component: broker3
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: broker3
+    spec:
+      containers:
+        - name: broker3
+          image: confluentinc/cp-kafka:latest
+          env:
+            - name: KAFKA_BROKER_ID
+              value: "3"
+            - name: KAFKA_ZOOKEEPER_CONNECT
+              value: "zookeeper-svc.kafka.svc.cluster.local:2181,zookeeper2-svc.kafka.svc.cluster.local:2181,zookeeper3-svc.kafka.svc.cluster.local:2181"
+            - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+              value: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: PLAINTEXT://broker3-svc.kafka.svc.cluster.local:29094,PLAINTEXT_HOST://localhost:9094
+            - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+              value: "1"
+            - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
+              value: "1"
+            - name: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
+              value: "1"
+            - name: KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS
+              value: "0"
+            - name: KAFKA_NUM_PARTITIONS
+              value: "5"
+            - name: KAFKA_JMX_PORT
+              value: "9101"
+            - name: KAFKA_JMX_HOSTNAME
+              value: localhost
+          ports:
+            - containerPort: 29094
+              name: p1
+            - containerPort: 9094
+              name: p2
+            - containerPort: 9101
+              name: p3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: broker3-svc
+  namespace: kafka
+spec:
+  selector:
+    component: broker3
+  type: ClusterIP
+  ports:
+    - name: broker
+      protocol: TCP
+      port: 9094
+    - name: broker2
+      protocol: TCP
+      port: 29094
 ---
 apiVersion: apps/v1
 kind: Deployment
