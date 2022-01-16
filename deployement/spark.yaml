@@ -119,7 +119,7 @@ spec:
   selector:
     matchLabels:
       component: spark-worker
-  replicas: 3
+  replicas: 2
   template:
     metadata:
       labels:
@@ -129,6 +129,13 @@ spec:
       containers:
         - name: spark-worker
           image: koukika/spark-worker:latest
+          resources:
+            limits:
+              memory: 1.5G
+              cpu: 1.5
+            requests:
+              memory: 1G
+              cpu: 1
           ports:
             - containerPort: 8081
               name: webui
@@ -136,9 +143,9 @@ spec:
             - name: SPARK_CONF_DIR
               value: "/conf"
             - name: SPARK_WORKER_CORES
-              value: "2"
+              value: "1"
             - name: SPARK_WORKER_MEMORY
-              value: "2g"
+              value: "1g"
             - name: SPARK_WORKER_PORT
               value: "8881"
             - name: SPARK_WORKER_WEBUI_PORT
@@ -206,7 +213,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: spark-worker
-  minReplicas: 3
+  minReplicas: 2
   maxReplicas: 5
   metrics:
   - type: Resource
@@ -214,10 +221,10 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 70
+        averageUtilization: 50
   - type: Resource
     resource:
       name: memory 
       target:
         type: Utilization
-        averageUtilization: 60
+        averageUtilization: 50
