@@ -1,11 +1,12 @@
-create keyspace cryptocurrency with replication = {'class' : 'SimpleStrategy', 'replication_factor' : 3};
+create keyspace cryptocurrency with replication = {'class' : 'NetworkTopologyStrategy', 'DC1':2, 'DC2':2};
 
 CREATE TABLE cryptocurrency.coin_by_marketdominance (
     name text,
     datetime timestamp,
     rank int,
     market_dominance double,
-    PRIMARY KEY ((rank), datetime));
+    PRIMARY KEY ((rank), datetime)) WITH CLUSTERING ORDER BY (datetime desc);
+
 --INSERT INTO cryptocurrency.coin_by_marketdominance (name, datetime, inserted_in_db, rank, market_dominance) VALUES ('Bitcoin', 1641662870916, toTimestamp(now()), 1, 50.0);
 
 --INSERT INTO NerdMovies JSON '{"movie": "Serenity", "director": "Joss Whedon", "year": 2005}';
@@ -84,10 +85,12 @@ CREATE TABLE cryptocurrency.candles (
 );
 
 CREATE TABLE cryptocurrency.candles_rsi (
-    datetime timestamp,
+    exchange text,
+    base text,
+    quote text,
+    start_datetime TIMESTAMP,
+    end_datetime TIMESTAMP,
     rsi double,
-    PRIMARY KEY (datetime)
+    PRIMARY KEY ((exchange, base, quote), start_datetime, end_datetime)
 );
 
--- query to get latest crypto data by rank
--- select * from cryptocurrency.coin_by_marketdominance where rank = 1 order by datetime desc limit 1;

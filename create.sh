@@ -14,7 +14,7 @@ kops update cluster ${CLUSTER_NAME} --yes
 kops export kubeconfig --admin
 kops validate cluster --wait 10m
 kubectl apply -f deployement/cassandra.yaml
-while [[ $(kubectl get pods cassandra-0 -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for cassandra" && sleep 1; done
+while [[ $(kubectl get pods cassandra-0 -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]] || [[ $(kubectl get pods cassandrab-0 -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for cassandra" && sleep 1; done
 echo "cassandra pod created"
 sleep 1m
 kubectl cp db_schema.cql cassandra-0:/ 

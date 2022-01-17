@@ -129,13 +129,6 @@ spec:
       containers:
         - name: spark-worker
           image: koukika/spark-worker:latest
-          resources:
-            limits:
-              memory: 1.5G
-              cpu: 1.5
-            requests:
-              memory: 1G
-              cpu: 1
           ports:
             - containerPort: 8081
               name: webui
@@ -143,9 +136,9 @@ spec:
             - name: SPARK_CONF_DIR
               value: "/conf"
             - name: SPARK_WORKER_CORES
-              value: "1"
+              value: "2"
             - name: SPARK_WORKER_MEMORY
-              value: "1g"
+              value: "2g"
             - name: SPARK_WORKER_PORT
               value: "8881"
             - name: SPARK_WORKER_WEBUI_PORT
@@ -221,10 +214,10 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 50
+        averageUtilization: 70
   - type: Resource
     resource:
       name: memory 
       target:
         type: Utilization
-        averageUtilization: 50
+        averageUtilization: 60
