@@ -1,54 +1,7 @@
-kind: Namespace
-apiVersion: v1
-metadata:
-  name: kafka
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: zookeeper
-  namespace: kafka
-spec:
-  selector:
-    matchLabels:
-      component: zookeeper
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        component: zookeeper
-    spec:
-      containers:
-        - name: zookeeper
-          image: confluentinc/cp-zookeeper:latest
-          env:
-            - name: ZOOKEEPER_CLIENT_PORT
-              value: "2181"
-            - name: ZOOKEEPER_TICK_TIME
-              value: "2000"
-          ports:
-            - containerPort: 2181
-              name: zk
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: zookeeper-svc
-  namespace: kafka
-spec:
-  selector:
-    component: zookeeper
-  type: ClusterIP
-  ports:
-    - name: zk
-      protocol: TCP
-      port: 2181
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: broker
-  namespace: kafka
 spec:
   selector:
     matchLabels:
@@ -66,11 +19,11 @@ spec:
             - name: KAFKA_BROKER_ID
               value: "1"
             - name: KAFKA_ZOOKEEPER_CONNECT
-              value: "zookeeper-svc.kafka.svc.cluster.local:2181"
+              value: "zookeeper-svc.default.svc.cluster.local:2181"
             - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
               value: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
             - name: KAFKA_ADVERTISED_LISTENERS
-              value: PLAINTEXT://broker-svc.kafka.svc.cluster.local:29092,PLAINTEXT_HOST://localhost:9092
+              value: PLAINTEXT://broker-svc.default.svc.cluster.local:29092,PLAINTEXT_HOST://localhost:9092
             - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
               value: "1"
             - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
@@ -97,7 +50,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: broker-svc
-  namespace: kafka
 spec:
   selector:
     component: broker
@@ -114,7 +66,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: broker2
-  namespace: kafka
 spec:
   selector:
     matchLabels:
@@ -132,11 +83,11 @@ spec:
             - name: KAFKA_BROKER_ID
               value: "2"
             - name: KAFKA_ZOOKEEPER_CONNECT
-              value: "zookeeper-svc.kafka.svc.cluster.local:2181"
+              value: "zookeeper-svc.default.svc.cluster.local:2181"
             - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
               value: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
             - name: KAFKA_ADVERTISED_LISTENERS
-              value: PLAINTEXT://broker2-svc.kafka.svc.cluster.local:29093,PLAINTEXT_HOST://localhost:9093
+              value: PLAINTEXT://broker2-svc.default.svc.cluster.local:29093,PLAINTEXT_HOST://localhost:9093
             - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
               value: "1"
             - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
@@ -163,7 +114,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: broker2-svc
-  namespace: kafka
 spec:
   selector:
     component: broker2
@@ -180,7 +130,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: broker3
-  namespace: kafka
 spec:
   selector:
     matchLabels:
@@ -198,11 +147,11 @@ spec:
             - name: KAFKA_BROKER_ID
               value: "3"
             - name: KAFKA_ZOOKEEPER_CONNECT
-              value: "zookeeper-svc.kafka.svc.cluster.local:2181"
+              value: "zookeeper-svc.default.svc.cluster.local:2181"
             - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
               value: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
             - name: KAFKA_ADVERTISED_LISTENERS
-              value: PLAINTEXT://broker3-svc.kafka.svc.cluster.local:29094,PLAINTEXT_HOST://localhost:9094
+              value: PLAINTEXT://broker3-svc.default.svc.cluster.local:29094,PLAINTEXT_HOST://localhost:9094
             - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
               value: "1"
             - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
@@ -229,7 +178,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: broker3-svc
-  namespace: kafka
 spec:
   selector:
     component: broker3
@@ -246,7 +194,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ingestion-api
-  namespace: kafka
   labels:
     component: ingestion-api
 spec:
@@ -261,7 +208,7 @@ spec:
     spec:
       containers:
         - name: ingestion-api
-          image: koukika/kafka-generator:latest
+          image: koukika/kafka-generator:1.1
           ports:
             - containerPort: 3000
               name: api
@@ -270,7 +217,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: ingestion-api-svc
-  namespace: kafka
 spec:
   selector:
     component: ingestion-api
@@ -284,7 +230,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ingestion-api2
-  namespace: kafka
   labels:
     component: ingestion-api2
 spec:
@@ -299,7 +244,7 @@ spec:
     spec:
       containers:
         - name: ingestion-api2
-          image: koukika/kafka-generator2:latest
+          image: koukika/kafka-generator2:1.1
           ports:
             - containerPort: 3000
               name: api
@@ -308,7 +253,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: ingestion-api2-svc
-  namespace: kafka
 spec:
   selector:
     component: ingestion-api2
@@ -317,3 +261,4 @@ spec:
     - name: ingestion-api2
       protocol: TCP
       port: 3000
+
