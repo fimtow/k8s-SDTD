@@ -129,6 +129,13 @@ spec:
       containers:
         - name: spark-worker
           image: koukika/spark-worker:latest
+          resources:
+            limits:
+              memory: 1.5G
+              cpu: 1.5
+            requests:
+              memory: 1G
+              cpu: 1
           ports:
             - containerPort: 8081
               name: webui
@@ -136,9 +143,9 @@ spec:
             - name: SPARK_CONF_DIR
               value: "/conf"
             - name: SPARK_WORKER_CORES
-              value: "2"
+              value: "1"
             - name: SPARK_WORKER_MEMORY
-              value: "2g"
+              value: "1g"
             - name: SPARK_WORKER_PORT
               value: "8881"
             - name: SPARK_WORKER_WEBUI_PORT
@@ -164,7 +171,7 @@ spec:
       serviceAccountName: spark-acc
       containers:
         - name: driver
-          image: koukika/spark-driver:latest
+          image: koukika/spark-driver:1.0
           ports:
             - containerPort: 7001
               name: driverp
@@ -214,10 +221,10 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 70
+        averageUtilization: 50
   - type: Resource
     resource:
       name: memory 
       target:
         type: Utilization
-        averageUtilization: 60
+        averageUtilization: 50
