@@ -20,6 +20,7 @@ sleep 1m
 kubectl cp db_schema.cql cassandra-0:/ 
 kubectl exec cassandra-0 -- cqlsh --file db_schema.cql
 kubectl apply -f deployement/spark.yaml
+kubectl apply -f deployement/spark2.yaml
 kubectl apply -f deployement/kafka.yaml
 kubectl apply -f deployement/visualisation.yaml
 CLUSTER_IP=$(kubectl get services visualisation | awk 'FNR == 2 {print $4}')

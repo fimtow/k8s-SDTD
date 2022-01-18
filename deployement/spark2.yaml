@@ -1,18 +1,18 @@
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: spark
+  name: spark2
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: spark-acc
-  namespace: spark
+  namespace: spark2
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  namespace: spark
+  namespace: spark2
   name: spark-role
 rules:
   - apiGroups: [""]
@@ -22,12 +22,12 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  namespace: spark
+  namespace: spark2
   name: spark-role-binding
 subjects:
   - kind: ServiceAccount
     name: spark-acc
-    namespace: spark
+    namespace: spark2
 roleRef:
   kind: ClusterRole
   name: spark-role
@@ -37,7 +37,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: spark-master
-  namespace: spark
+  namespace: spark2
   labels:
     component: spark-master
 spec:
@@ -53,7 +53,7 @@ spec:
       serviceAccountName: spark-acc
       containers:
         - name: spark-master
-          image: koukika/spark-master2:latest
+          image: koukika/spark-master:latest
           ports:
             - containerPort: 7077
               name: master
@@ -73,7 +73,7 @@ spec:
             - name: SPARK_CONF_DIR
               value: "/conf"
             - name: MASTER
-              value: "spark://spark-master-svc.spark.svc.cluster.local:7077"
+              value: "spark://spark-master-svc.spark2.svc.cluster.local:7077"
             - name: SPARK_MASTER_HOST
               valueFrom:
                 fieldRef:
@@ -83,7 +83,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: spark-master-svc
-  namespace: spark
+  namespace: spark2
 spec:
   selector:
     component: spark-master
@@ -112,14 +112,14 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: spark-worker
-  namespace: spark
+  namespace: spark2
   labels:
     component: spark-worker
 spec:
   selector:
     matchLabels:
       component: spark-worker
-  replicas: 3
+  replicas: 2
   template:
     metadata:
       labels:
@@ -128,7 +128,7 @@ spec:
       serviceAccountName: spark-acc
       containers:
         - name: spark-worker
-          image: koukika/spark-worker2:latest
+          image: koukika/spark-worker:latest
           resources:
             limits:
               memory: 1.5G
@@ -155,7 +155,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: driver
-  namespace: spark
+  namespace: spark2
   labels:
     component: driver
 spec:
@@ -171,7 +171,7 @@ spec:
       serviceAccountName: spark-acc
       containers:
         - name: driver
-          image: koukika/rsi-driver:latest
+          image: koukika/spark-driver:1.0
           ports:
             - containerPort: 7001
               name: driverp
@@ -181,13 +181,13 @@ spec:
               name: blockm
           env:
             - name: MASTER
-              value: "spark://spark-master-svc.spark.svc.cluster.local:7077"
+              value: "spark://spark-master-svc.spark2.svc.cluster.local:7077"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: spark-driver-svc
-  namespace: spark
+  namespace: spark2
 spec:
   selector:
     component: driver
@@ -207,7 +207,7 @@ apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
   name: spark-worker
-  namespace: spark
+  namespace: spark2
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
