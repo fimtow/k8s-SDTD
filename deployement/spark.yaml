@@ -171,7 +171,7 @@ spec:
       serviceAccountName: spark-acc
       containers:
         - name: driver
-          image: koukika/rsi-driver:latest
+          image: koukika/rsi-driver:1.1
           ports:
             - containerPort: 7001
               name: driverp
