@@ -31,6 +31,7 @@ subjects:
 roleRef:
   kind: ClusterRole
   name: spark-role
+  namespace: spark2
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: apps/v1
@@ -235,10 +236,10 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 50
+        averageUtilization: 60
   - type: Resource
     resource:
       name: memory 
       target:
         type: Utilization
-        averageUtilization: 50
+        averageUtilization: 60
