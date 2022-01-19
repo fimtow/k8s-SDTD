@@ -212,7 +212,7 @@ spec:
   selector:
     component: driver
   ports:
-   - port: 4040
+   - port: 80
      protocol: TCP
      targetPort: 4040
   type: LoadBalancer
