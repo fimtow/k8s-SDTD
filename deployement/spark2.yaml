@@ -31,7 +31,6 @@ subjects:
 roleRef:
   kind: ClusterRole
   name: spark-role
-  namespace: spark2
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: apps/v1
