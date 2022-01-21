@@ -1,5 +1,6 @@
 # User guide
-All necessary installations are managed by the Dockerfile provided. Launching the container only requires building the image and running it.  
+All necessary installations are managed by the Dockerfile provided. Launching the container only requires building the image and running it. Before you start, make sure you have a working GCP account and have already created a GCP project.
+
 Inside the project folder, issue the following commands:
 * Build command :
 ```bash
